@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your responsive CSS file -->
+    <title>Weather Details</title>
+    <style>
+        /* Add some styles for the loading indicator */
+        #loading-indicator {
+            display: none;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #loading-indicator img {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading indicator -->
+    <div id="loading-indicator">
+        <img src="/images/loading.gif" alt="Loading">
+    </div>
+
+    <!-- Add a dynamic clock display using JavaScript -->
+    <h2 id="clock"></h2>
+
+    <h1>Weather Details for <span th:text="${weatherData.city}"></span></h1>
+    <p>Temperature: <span th:text="${weatherData.temperature}"></span>&deg;C</p>
+    <p>Last Updated: <span th:text="${weatherData.timestamp}"></span></p>
+    <p><a href="#" id="toggle-dark-mode">Toggle Dark Mode</a></p>
+
+    <!-- Add hourly forecast table -->
+    <h2>Hourly Forecast</h2>
+    <table>
+        <!-- ... (hourly forecast table) ... -->
+    </table>
+    
+    <!-- Add weather alerts section -->
+	<h2>Weather Alerts</h2>
+	<ul th:if="${weatherAlerts != null}">
+	    <li th:each="alert : ${weatherAlerts}">
+	        <strong th:text="${alert.title}"></strong>: <span th:text="${alert.description}"></span>
+	    </li>
+	</ul>
+	<p th:if="${weatherAlerts == null || weatherAlerts.isEmpty()}">No weather alerts at the moment.</p>
+
+
+    <!-- Add a link to go back to the home page -->
+    <p><a href="/">Go back</a></p>
+    
+
+    <!-- JavaScript for updating the clock and handling loading indicator -->
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            // Format the time as HH:mm:ss
+            var formattedTime =
+                (hours < 10 ? '0' : '') + hours + ':' +
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+
+            // Update the clock element
+            document.getElementById('clock').innerText = formattedTime;
+        }
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+
+        // Show loading indicator when the page starts loading
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('loading-indicator').style.display = 'block';
+        });
+
+        // Hide loading indicator when the page finishes loading
+        window.addEventListener('load', function () {
+            document.getElementById('loading-indicator').style.display = 'none';
+        });
+        
+        document.getElementById('toggle-dark-mode').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+    });
+    </script>
+</body>
+</html>
