@@ -2,8 +2,6 @@ package com.wise_neosco.model;
 
 import java.util.List;
 
-import com.wise_neosco.dto.OpenWeatherApiResponse.OpenWeatherApiHourlyData;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

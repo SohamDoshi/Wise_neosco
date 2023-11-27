@@ -1,9 +1,6 @@
 package com.wise_neosco.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import com.wise_neosco.dto.OpenWeatherApiResponse.OpenWeatherApiHourlyData;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,13 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "weather_data")
 public class WeatherData {
@@ -33,8 +26,29 @@ public class WeatherData {
     private Double temperature;
 
     @Column(nullable = false)
+    private Integer pressure;
+
+    @Column(nullable = false)
+    private Integer humidity;
+
+    @Column(nullable = false)
+    private String weatherDescription;
+
+    @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    // Constructors, getters, and setters
+    public WeatherData() {
+        // Default constructor needed for JPA
+    }
+
+    public WeatherData(String city, Double temperature, Integer pressure, Integer humidity, String weatherDescription) {
+        this.city = city;
+        this.temperature = temperature;
+        this.pressure = pressure;
+        this.humidity = humidity;
+        this.weatherDescription = weatherDescription;
+    }
+
+    // getters and setters
 }
 

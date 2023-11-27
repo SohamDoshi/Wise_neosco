@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.wise_neosco.dto.OpenWeatherApiResponse;
+import com.wise_neosco.dto.OpenWeatherHourlyResponse;
 import com.wise_neosco.exception.WeatherServiceException;
 import com.wise_neosco.model.HourlyForecast;
 import com.wise_neosco.model.WeatherAlert;
@@ -32,24 +33,29 @@ public class WeatherService {
 
     
     public HourlyForecast getHourlyForecast(String city) {
-        String apiUrl = "https://api.openweathermap.org/data/2.5/forecast";
-        String url = String.format("%s?q=%s&appid=%s", apiUrl, city, apiKey);
+        try {
+            String apiUrl = "http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={apiKey}&units=metric";
 
-        OpenWeatherApiResponse response = restTemplate.getForObject(url, OpenWeatherApiResponse.class);
+            OpenWeatherHourlyResponse response = restTemplate.getForObject(apiUrl, OpenWeatherHourlyResponse.class, city, apiKey);
 
-        if (response != null && response.getList() != null) {
-            List<HourlyForecast.HourlyData> hourlyDataList = response.getList().stream()
-                    .map(hourly -> new HourlyForecast.HourlyData(
-                            hourly.getDt_txt(),
-                            hourly.getMain().getTemp(),
-                            hourly.getWeather().get(0).getDescription()))
-                    .collect(Collectors.toList());
+            if (response != null && response.getList() != null) {
+                List<HourlyForecast.HourlyData> hourlyDataList = response.getList().stream()
+                        .map(hourly -> new HourlyForecast.HourlyData(
+                                hourly.getDt_txt(),
+                                hourly.getMain().getTemp(),
+                                hourly.getWeather().get(0).getDescription()))
+                        .collect(Collectors.toList());
 
-            return new HourlyForecast(city, hourlyDataList);
+                return new HourlyForecast(city, hourlyDataList);
+            }
+
+            return null; // Handle appropriately if data is not available
+        } catch (Exception e) {
+            // Log the exception
+            throw new WeatherServiceException("Error getting hourly forecast data", e);
         }
-
-        return null; // Handle appropriately if data is not available
     }
+
     
     
     
@@ -88,10 +94,26 @@ public class WeatherService {
     }
 
     private WeatherData getCurrentWeather(String city) {
-        String apiUrl = "https://api.openweathermap.org/data/2.5/weather";
-        String url = String.format("%s?q=%s&appid=%s", apiUrl, city, apiKey);
+        try {
+            String apiUrl = "http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}&units=metric";
 
-        return restTemplate.getForObject(url, WeatherData.class);
+            OpenWeatherApiResponse response = restTemplate.getForObject(apiUrl, OpenWeatherApiResponse.class, city, apiKey);
+
+            if (response != null) {
+                return new WeatherData(
+                        city,
+                        response.getMain().getTemp(),
+                        response.getMain().getPressure(),
+                        response.getMain().getHumidity(),
+                        response.getWeather()[0].getDescription()
+                );
+            } else {
+                throw new WeatherServiceException("Error getting weather data. OpenWeather API response is null.",null);
+            }
+        } catch (Exception e) {
+            // Log the exception
+            throw new WeatherServiceException("Error getting current weather data", e);
+        }
     }
 }
 
