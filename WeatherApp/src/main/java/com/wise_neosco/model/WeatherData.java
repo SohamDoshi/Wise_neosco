@@ -36,17 +36,21 @@ public class WeatherData {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
+    
+    @Column(nullable = false)
+    private Long cityId;
 
     public WeatherData() {
         // Default constructor needed for JPA
     }
 
-    public WeatherData(String city, Double temperature, Integer pressure, Integer humidity, String weatherDescription) {
+    public WeatherData(String city, Double temperature, Integer pressure, Integer humidity, String weatherDescription, Long cityId) {
         this.city = city;
         this.temperature = temperature;
         this.pressure = pressure;
         this.humidity = humidity;
         this.weatherDescription = weatherDescription;
+        this.cityId = cityId;
     }
 
     // getters and setters

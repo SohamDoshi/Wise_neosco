@@ -32,11 +32,11 @@ public class WeatherService {
     }
 
     
-    public HourlyForecast getHourlyForecast(String city) {
+    public HourlyForecast getHourlyForecast(Long cityId) {
         try {
-            String apiUrl = "http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={apiKey}&units=metric";
+            String apiUrl = "http://api.openweathermap.org/data/2.5/forecast?id={cityId}&appid={apiKey}";
 
-            OpenWeatherHourlyResponse response = restTemplate.getForObject(apiUrl, OpenWeatherHourlyResponse.class, city, apiKey);
+            OpenWeatherHourlyResponse response = restTemplate.getForObject(apiUrl, OpenWeatherHourlyResponse.class, cityId, apiKey);
 
             if (response != null && response.getList() != null) {
                 List<HourlyForecast.HourlyData> hourlyDataList = response.getList().stream()
@@ -46,15 +46,17 @@ public class WeatherService {
                                 hourly.getWeather().get(0).getDescription()))
                         .collect(Collectors.toList());
 
-                return new HourlyForecast(city, hourlyDataList);
+                return new HourlyForecast(response.getCity().getName(), hourlyDataList);
             }
 
-            return null; // Handle appropriately if data is not available
+            return null;
         } catch (Exception e) {
-            // Log the exception
             throw new WeatherServiceException("Error getting hourly forecast data", e);
         }
     }
+
+
+
 
     
     
@@ -105,7 +107,8 @@ public class WeatherService {
                         response.getMain().getTemp(),
                         response.getMain().getPressure(),
                         response.getMain().getHumidity(),
-                        response.getWeather()[0].getDescription()
+                        response.getWeather()[0].getDescription(),
+                        response.getId()
                 );
             } else {
                 throw new WeatherServiceException("Error getting weather data. OpenWeather API response is null.",null);

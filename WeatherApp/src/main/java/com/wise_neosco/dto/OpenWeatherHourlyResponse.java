@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class OpenWeatherHourlyResponse {
 
     private List<HourlyData> list;
-
+    private City city;
     // getters and setters
 
     @Data
@@ -49,5 +49,16 @@ public class OpenWeatherHourlyResponse {
         private String description;
 
         // getters and setters
+    }
+    
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class City {
+        private String name;
+
+        // Getter and setter for name
     }
 }
