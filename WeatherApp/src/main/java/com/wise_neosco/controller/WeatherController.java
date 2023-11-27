@@ -13,8 +13,12 @@ import com.wise_neosco.service.WeatherService;
 @Controller
 public class WeatherController {
 
-	@Autowired
-    private WeatherService weatherService;
+    private final WeatherService weatherService;
+
+    @Autowired
+    public WeatherController(WeatherService weatherService) {
+        this.weatherService = weatherService;
+    }
 
 	 @GetMapping("/")
 	    public String index() {
